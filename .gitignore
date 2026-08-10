@@ -10,3 +10,4 @@ ai4i2020.csv
 machine_failure_model.pkl
 scaler.pkl
 feature_columns.pkl
+/processed_machine_data.csv
