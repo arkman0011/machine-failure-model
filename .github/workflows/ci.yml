@@ -1,27 +1,40 @@
-name: ML Threshold Test
+name: ML CI Pipeline
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main, model-test, avenger ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  test-threshold:
+  test:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
-      - name: Download repository code
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: '3.11'
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          pip install pytest nbmake
 
-      - name: Test only threshold.py
-        run: python -m pytest threshold.py -v
+      - name: Confirm dataset is present
+        run: |
+          if [ ! -f "ai4i2020.csv" ]; then
+            echo "ERROR: ai4i2020.csv not found in repo. Commit the dataset or add a download step."
+            exit 1
+          fi
+
+      - name: Run notebook tests
+        run: python -m pytest --nbmake main.ipynb -v
+
+      - name: Run all Python tests
+        run: python -m pytest -v
