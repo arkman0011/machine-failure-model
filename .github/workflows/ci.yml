@@ -2,9 +2,14 @@ name: ML CI Pipeline
 
 on:
   push:
-    branches: [ main, model-test, avenger ]
+    branches:
+      - main
+      - model-test
+      - avenger
+
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   test:
@@ -18,7 +23,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Install dependencies
         run: |
@@ -26,15 +31,21 @@ jobs:
           pip install -r requirements.txt
           pip install pytest nbmake
 
+      - name: Show Python files
+        run: find . -maxdepth 2 -type f -name "*.py"
+
       - name: Confirm dataset is present
         run: |
           if [ ! -f "ai4i2020.csv" ]; then
-            echo "ERROR: ai4i2020.csv not found in repo. Commit the dataset or add a download step."
+            echo "ERROR: ai4i2020.csv not found in repo."
             exit 1
           fi
 
       - name: Run notebook tests
         run: python -m pytest --nbmake main.ipynb -v
+
+      - name: Show discovered Python tests
+        run: python -m pytest --collect-only -v
 
       - name: Run all Python tests
         run: python -m pytest -v
