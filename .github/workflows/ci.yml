@@ -1,4 +1,4 @@
-name: ML CI Pipeline
+name: ML Threshold Test
 
 on:
   push:
@@ -6,15 +6,14 @@ on:
       - main
 
 jobs:
-  build-and-test:
+  test-threshold:
     runs-on: ubuntu-latest
 
     steps:
-
-      - name: Get project code
+      - name: Download repository code
         uses: actions/checkout@v4
 
-      - name: Setup Python
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -24,5 +23,5 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Build Docker image
-        run: docker build -t machine-failure-model .
+      - name: Test only threshold.py
+        run: python -m pytest threshold.py -v
