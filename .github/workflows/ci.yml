@@ -2,27 +2,36 @@ name: ML CI Pipeline
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main, model-test, avenger ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  build-and-test:
+  test:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
-
-      - name: Get project code
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Python
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: '3.11'
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          pip install pytest nbmake
 
-      - name: Build Docker image
-        run: docker build -t machine-failure-model .
+      - name: Confirm dataset is present
+        run: |
+          if [ ! -f "ai4i2020.csv" ]; then
+            echo "ERROR: ai4i2020.csv not found in repo. Commit the dataset or add a download step."
+            exit 1
+          fi
+
+      - name: Run notebook tests
+        run: python -m pytest --nbmake main.ipynb -v
