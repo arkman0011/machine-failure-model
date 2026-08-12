@@ -9,3 +9,12 @@ pydantic
 pytest
 matplotlib
 seaborn
+fastapi
+uvicorn
+httpx
+pydantic
+pandas
+numpy
+scikit-learn
+joblib
+pytest
