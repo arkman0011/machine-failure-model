@@ -3,7 +3,7 @@ uvicorn[standard]
 pandas
 numpy
 scikit-learn
-xgboost
+xgboost-cpu
 joblib
 pydantic
 pytest
